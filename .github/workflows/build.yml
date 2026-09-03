@@ -1,0 +1,25 @@
+name: Replace Balatro Assets
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Replace Assets, Re-pack & Sign
+        run: |
+          # 1. 解压、覆盖 assets 并重新 zip 打包
+          unzip -q balatro.apk -d app
+          cp -r my_assets/* app/assets/
+          cd app && zip -rq ../balatro-modified.apk . && cd ..
+
+          # 2. 生成临时密钥并直接用系统自带的 debug 密钥签名（无需安装额外工具）
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug"
+          jarsigner -keystore debug.keystore -storepass android -keypass android balatro-modified.apk androiddebugkey
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: balatro-modified
+          path: balatro-modified.apk
