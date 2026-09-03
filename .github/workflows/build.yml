@@ -19,7 +19,7 @@ jobs:
           # 3. 4 字节对齐
           $BUILD_TOOLS/zipalign -v -p 4 balatro.apk balatro-aligned.apk
 
-          # 4. 固定密钥
+          # 4. 固定密钥（密码 6 位，别名 b，dname 最小化）
           keytool -genkeypair -keystore release.keystore \
             -storepass 123456 -alias b -keyalg RSA -validity 10000 \
             -dname "CN=B"
@@ -29,7 +29,7 @@ jobs:
             --ks release.keystore --ks-pass pass:123456 \
             --out balatro-signed.apk balatro-aligned.apk
 
-      - its: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v5
         with:
           name: balatro-modified
           path: balatro-signed.apk
