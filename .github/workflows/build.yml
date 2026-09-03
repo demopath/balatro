@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Replace Assets, Re-pack & Sign
         run: |
@@ -19,7 +19,7 @@ jobs:
           keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug"
           jarsigner -keystore debug.keystore -storepass android -keypass android balatro-modified.apk androiddebugkey
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: balatro-modified
           path: balatro-modified.apk
