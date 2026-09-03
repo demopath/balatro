@@ -8,18 +8,28 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Replace Assets, Re-pack & Sign
+      - name: Replace Assets, Align & Sign
         run: |
-          # 1. 解压、覆盖 assets 并重新 zip 打包
-          unzip -q balatro.apk -d app
-          cp -r assets/* app/assets/
-          cd app && zip -rq ../balatro-modified.apk . && cd ..
+          # 1. 直接覆盖追加 assets 文件夹
+          zip -r -g balatro.apk assets/
 
-          # 2. 生成临时密钥并直接用系统自带的 debug 密钥签名（无需安装额外工具）
-          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug"
-          jarsigner -keystore debug.keystore -storepass android -keypass android balatro-modified.apk androiddebugkey
+          # 2. 定位系统预装的 Android Build Tools
+          BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
 
-      - uses: actions/upload-artifact@v5
+          # 3. 4 字节对齐
+          $BUILD_TOOLS/zipalign -v -p 4 balatro.apk balatro-aligned.apk
+
+          # 4. 固定密钥
+          keytool -genkeypair -keystore release.keystore \
+            -storepass 123456 -alias b -keyalg RSA -validity 10000 \
+            -dname "CN=B"
+
+          # 5. v2/v3 签名
+          $BUILD_TOOLS/apksigner sign \
+            --ks release.keystore --ks-pass pass:123456 \
+            --out balatro-signed.apk balatro-aligned.apk
+
+      - its: actions/upload-artifact@v5
         with:
           name: balatro-modified
-          path: balatro-modified.apk
+          path: balatro-signed.apk
