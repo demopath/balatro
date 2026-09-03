@@ -8,10 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Replace Assets, Align & Sign
+      - name: Replace Entire Assets, Align & Sign
         run: |
-          # 1. 直接覆盖追加 assets 文件夹
-          zip -r -g balatro.apk assets/
+          # 1. 彻底删除 APK 内原有的 assets 文件夹，再将全新的 assets/ 写入
+          zip -d balatro.apk "assets/*" || true
+          zip -r balatro.apk assets/
 
           # 2. 定位系统预装的 Android Build Tools
           BUILD_TOOLS=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
@@ -19,17 +20,17 @@ jobs:
           # 3. 4 字节对齐
           $BUILD_TOOLS/zipalign -v -p 4 balatro.apk balatro-aligned.apk
 
-          # 4. 固定密钥（密码 6 位，别名 b，dname 最小化）
+          # 4. 固定密钥生成（保证后续版本能覆盖升级）
           keytool -genkeypair -keystore release.keystore \
             -storepass 123456 -alias b -keyalg RSA -validity 10000 \
             -dname "CN=B"
 
-          # 5. v2/v3 签名
+          # 5. v2/v3 完整签名
           $BUILD_TOOLS/apksigner sign \
             --ks release.keystore --ks-pass pass:123456 \
             --out balatro-signed.apk balatro-aligned.apk
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: balatro-modified
           path: balatro-signed.apk
