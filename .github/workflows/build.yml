@@ -12,7 +12,7 @@ jobs:
         run: |
           # 1. 解压、覆盖 assets 并重新 zip 打包
           unzip -q balatro.apk -d app
-          cp -r my_assets/* app/assets/
+          cp -r assets/* app/assets/
           cd app && zip -rq ../balatro-modified.apk . && cd ..
 
           # 2. 生成临时密钥并直接用系统自带的 debug 密钥签名（无需安装额外工具）
