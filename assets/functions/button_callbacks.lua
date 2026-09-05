@@ -1805,6 +1805,12 @@ end
 --  love.platform.showLocalPlayerProfile()
 --end
 
+G.FUNCS.go_to_qq = function(e)
+  love.system.openURL( "https://qm.qq.com/q/Z0dbbp7NKy" )
+end
+G.FUNCS.go_to_bilibili = function(e)
+  love.system.openURL( "https://space.bilibili.com/702905468" )
+end
 G.FUNCS.go_to_discord = function(e)
   love.system.openURL( "https://discord.gg/balatro" )
 end
@@ -3311,4 +3317,471 @@ G.FUNCS.wipe_off = function()
       return true
     end
   }))
+end
+
+
+-- =========================
+-- 快速存档/读档（带确认弹窗，修复返回/取消崩溃）
+-- 关键修复：把所有 "close" 改为 "exit_overlay_menu"
+-- =========================
+
+-- 真正执行“保存”的函数（由弹窗确认按钮调用）
+G.FUNCS.DT_do_save = function(e)
+    -- 先关闭弹窗（你这个版本有 exit_overlay_menu）
+    if G.FUNCS.exit_overlay_menu then G.FUNCS.exit_overlay_menu(e) end
+
+    if G.STAGE == G.STAGES.RUN and G.ARGS and G.ARGS.save_run then
+        local sl_path = G.SETTINGS.profile..'/'..'save_mod_sl.jkr'
+        local data_to_save = G.ARGS.save_run
+        data_to_save.VERSION = G.VERSION
+
+        -- 底层静默保存
+        compress_and_save(sl_path, STR_PACK(data_to_save))
+        if G.FUNCS.DT_after_save then G.FUNCS.DT_after_save() end
+
+        -- 提示位置：底部居中 (bm)，避开菜单
+        attention_text({
+            text = "进度已保存",
+            scale = 0.5,
+            hold = 0.8,
+            colour = G.C.WHITE,
+            align = 'bm',
+            offset = {x=0, y=-0.5},
+            major = G.ROOM_ATTACH
+        })
+    else
+        attention_text({
+            text = "当前没有可保存的进度",
+            scale = 0.45,
+            hold = 1.2,
+            colour = G.C.WHITE,
+            align = 'bm',
+            offset = {x=0, y=-0.5},
+            major = G.ROOM_ATTACH
+        })
+    end
+end
+
+-- 真正执行“读取”的函数（由弹窗确认按钮调用）
+G.FUNCS.DT_do_load = function(e)
+    -- 先关闭弹窗
+    if G.FUNCS.exit_overlay_menu then G.FUNCS.exit_overlay_menu(e) end
+
+    local sl_path = G.SETTINGS.profile..'/'..'save_mod_sl.jkr'
+    local raw_data = get_compressed(sl_path)
+
+    if raw_data then
+        local decoded = STR_UNPACK(raw_data)
+        if decoded and decoded.VERSION then
+            G.E_MANAGER:clear_queue()
+            G:delete_run()
+            G.SAVED_GAME = decoded
+            G:start_run({savetext = G.SAVED_GAME})
+            return
+        end
+    end
+
+    -- 失败提示：底部居中 (bm)
+    attention_text({
+        text = "未发现存档或存档损坏，请先存档",
+        scale = 0.5,
+        hold = 1,
+        align = 'bm',
+        offset = {x=0, y=-0.5},
+        major = G.ROOM_ATTACH
+    })
+end
+
+-- 1. 快速存档（入口：弹窗确认）
+G.FUNCS.DT_new_save = function(e)
+    if G.STAGE ~= G.STAGES.RUN then return end
+    if not (G.ARGS and G.ARGS.save_run) then
+        attention_text({
+            text = "当前没有可保存的进度",
+            scale = 0.45,
+            hold = 1.2,
+            colour = G.C.WHITE,
+            align = 'bm',
+            offset = {x=0, y=-0.5},
+            major = G.ROOM_ATTACH
+        })
+        return
+    end
+
+G.FUNCS.overlay_menu{
+    definition = create_UIBox_generic_options({
+        back_func = "exit_overlay_menu",
+        contents = {
+            {n=G.UIT.R, config={align="cm", padding=0.1}, nodes={
+                {n=G.UIT.T, config={text="是否保存游戏进度", scale=0.5, colour=G.C.WHITE}}
+            }},
+            {n=G.UIT.R, config={align="cm", padding=0.15}, nodes={
+                UIBox_button{ label={"确定保存"}, button="DT_do_save", minw=5, minh=0.6, scale=0.45, colour=G.C.BLUE }
+            }}
+        }
+    })
+}
+
+end
+
+-- 2. 快速读档（入口：弹窗确认）
+G.FUNCS.DT_new_load = function(e)
+    if G.STAGE ~= G.STAGES.RUN then return end
+
+    -- 没有存档就不弹窗，直接提示
+    local sl_path = G.SETTINGS.profile..'/'..'save_mod_sl.jkr'
+    local raw_data = get_compressed(sl_path)
+    if not raw_data then
+        attention_text({
+            text = "未发现存档，请先存档",
+            scale = 0.5,
+            hold = 1,
+            align = 'bm',
+            offset = {x=0, y=-0.5},
+            major = G.ROOM_ATTACH
+        })
+        return
+    end
+
+    G.FUNCS.overlay_menu{
+        definition = create_UIBox_generic_options({
+            back_func = "exit_overlay_menu",
+            contents = {
+                {n=G.UIT.R, config={align="cm", padding=0.1}, nodes={
+                    {n=G.UIT.T, config={text="是否读取进度", scale=0.5, colour=G.C.WHITE}}
+                }},
+                {n=G.UIT.R, config={align="cm", padding=0.15}, nodes={
+                    UIBox_button{ label={"确认读取"}, button="DT_do_load", minw=5, minh=0.6, scale=0.45, colour=G.C.GREEN }
+                }}
+            }
+        })
+    }
+end
+
+-- 3. 快速重开
+G.FUNCS.DT_new_run = function(e)
+    if not G.GAME.won and not G.GAME.seeded and not G.GAME.challenge then
+        G.PROFILES[G.SETTINGS.profile].high_scores.current_streak.amt = 0
+    end
+    G:save_settings()
+    G.SETTINGS.current_setup = 'New Run'
+    G.GAME.viewed_back = nil
+    G.run_setup_seed = G.GAME.seeded
+    G.challenge_tab = G.GAME and G.GAME.challenge and G.GAME.challenge_tab or nil
+    G.forced_seed, G.setup_seed = nil, nil
+    if G.GAME.seeded then G.forced_seed = G.GAME.pseudorandom.seed end
+    G.forced_stake = G.GAME.stake
+
+    -- 直接执行，无文字提示
+    if G.STAGE == G.STAGES.RUN then
+        G.FUNCS.start_setup_run()
+    end
+
+    G.forced_stake = nil
+    G.challenge_tab = nil
+    G.forced_seed = nil
+end
+
+
+-- =========================
+-- 存档导出/导入（与 PC 互通：统一 FILE 命名 + love.filesystem）
+-- =========================
+
+local function DT_map_export_name_to_local(name)
+    local slot = name:match("^(%d+)%-meta%.jkr$")
+    if slot then return slot .. "/meta.jkr" end
+    slot = name:match("^(%d+)%-profile%.jkr$")
+    if slot then return slot .. "/profile.jkr" end
+    slot = name:match("^save/ASET/(%d+)/save%.jkr$")
+    if slot then return slot .. "/save.jkr" end
+    slot = name:match("^save/ASET/(%d+)/save_mod_sl%.jkr$")
+    if slot then return slot .. "/save_mod_sl.jkr" end
+    if name == "save_mod_sl.jkr" then
+        return (tostring(G.SETTINGS.profile or 1)) .. "/save_mod_sl.jkr"
+    end
+    if name:match("^%d+/(meta|profile|save|save_mod_sl)%.jkr$") then
+        return name
+    end
+    return nil
+end
+
+local function DT_ensure_parent_dir(rel)
+    local dir = rel:match("^(.*)/[^/]+$")
+    if dir and dir ~= "" then
+        love.mod_filesystem.createDirectory(dir)
+    end
+end
+
+local function DT_fs_read(rel)
+    return love.mod_filesystem.read(rel)
+end
+
+local function DT_drain_save_queue()
+    local ch = love.thread.getChannel("save_request")
+    if ch then
+        while ch:pop() do end
+    end
+end
+
+local function DT_block_saves(on)
+    G.DT_BLOCK_SAVE = on and true or nil
+    if on then
+        DT_drain_save_queue()
+        G.FILE_HANDLER = G.FILE_HANDLER or {}
+        G.FILE_HANDLER.update_queued = false
+        G.FILE_HANDLER.progress = nil
+        G.FILE_HANDLER.run = nil
+        G.FILE_HANDLER.settings = nil
+        G.FILE_HANDLER.empty_profile = nil
+        G.FILE_HANDLER.force = false
+        G.ARGS.save_progress = nil
+        G.ARGS.save_run = nil
+        G.ARGS.save_settings = nil
+    end
+    if not Game._dt_save_guard then
+        Game._dt_save_guard = true
+        local _sp = Game.save_progress
+        local _ss = Game.save_settings
+        local _sn = Game.save_notify
+        local _ep = Game.empty_profile
+        Game.save_progress = function(self, ...)
+            if G.DT_BLOCK_SAVE then return end
+            return _sp(self, ...)
+        end
+        Game.save_settings = function(self, ...)
+            if G.DT_BLOCK_SAVE then return end
+            return _ss(self, ...)
+        end
+        Game.save_notify = function(self, ...)
+            if G.DT_BLOCK_SAVE then return end
+            return _sn(self, ...)
+        end
+        Game.empty_profile = function(self, ...)
+            if G.DT_BLOCK_SAVE then return end
+            return _ep(self, ...)
+        end
+    end
+end
+
+local function DT_fs_write(rel, raw)
+    DT_ensure_parent_dir(rel)
+    local ok = love.mod_filesystem.write(rel, raw)
+    local root = love.filesystem.getSaveDirectory()
+    if root and raw then
+        local path = root .. "/" .. rel
+        local dir = path:match("^(.*)/[^/]+$")
+        if dir then
+            pcall(function()
+                os.execute(string.format("mkdir -p %q", dir))
+            end)
+        end
+        local f = io.open(path, "wb")
+        if f then
+            f:write(raw)
+            f:close()
+            ok = true
+        end
+    end
+    return ok
+end
+
+G.FUNCS.DT_go_to_menu = function(e)
+    G.SETTINGS.paused = true
+    if G.OVERLAY_MENU then
+        G.OVERLAY_MENU:remove()
+        G.OVERLAY_MENU = nil
+    end
+    G.E_MANAGER:clear_queue()
+    G.CONTROLLER.locks.wipe = nil
+    if G.screenwipe then G.screenwipe:remove(); G.screenwipe = nil end
+    if G.screenwipecard then G.screenwipecard:remove(); G.screenwipecard = nil end
+    G:delete_run()
+    G:main_menu('game')
+end
+
+G.FUNCS.DT_export_save = function(e)
+    local logs = {}
+    local file_list = ""
+    local exported = 0
+
+    local function emit(exp, content)
+        if not content then return end
+        file_list = file_list .. "FILE:" .. exp .. ":" .. love.data.encode("string", "base64", content) .. "\n"
+        exported = exported + 1
+        logs[#logs + 1] = "导出成功: " .. exp
+    end
+
+    for i = 1, 3 do
+        emit(i .. "-meta.jkr", DT_fs_read(i .. "/meta.jkr"))
+        emit(i .. "-profile.jkr", DT_fs_read(i .. "/profile.jkr"))
+        emit("save/ASET/" .. i .. "/save.jkr", DT_fs_read(i .. "/save.jkr"))
+    end
+
+    local sl1 = DT_fs_read("1/save_mod_sl.jkr")
+    if not sl1 then
+        local cur = tostring(G.SETTINGS.profile or 1)
+        if cur ~= "1" then
+            sl1 = DT_fs_read(cur .. "/save_mod_sl.jkr")
+        end
+    end
+    emit("save/ASET/1/save_mod_sl.jkr", sl1)
+
+    for i = 2, 3 do
+        emit("save/ASET/" .. i .. "/save_mod_sl.jkr", DT_fs_read(i .. "/save_mod_sl.jkr"))
+    end
+
+    local info_header =
+        "--- 使用教程:用文件分享功能发送文件，导入时把文本用记事本打开后，全选复制所有内容，游戏内点击导入存档，即可解析存档数据 ---\n"
+        .. "时间: " .. os.date() .. "\n"
+        .. "手机存档目录: " .. tostring(love.filesystem.getSaveDirectory() or "") .. "\n"
+
+    local final_output =
+        info_header ..
+        "\n--- 操作日志 ---\n" .. table.concat(logs, "\n") .. "\n" ..
+        "\n数据起始标记(请勿修改以下内容):\n" ..
+        file_list
+
+    local out = "\239\187\191" .. final_output
+
+    for _, path in ipairs({
+        "/sdcard/Download/balatro_save.txt",
+        "/storage/emulated/0/Download/balatro_save.txt",
+    }) do
+        local f = io.open(path, "wb")
+        if f then
+            f:write(out)
+            f:close()
+            attention_text({
+                text = "存档已导出到Download目录\n可分享文件到其它设备",
+                scale = 0.4,
+                hold = 5
+            })
+            return
+        end
+    end
+
+    local save_dir = love.filesystem.getSaveDirectory() or ""
+    local pkg = save_dir:match("([^/]+)/files/") or "com.fengzhilvren.balatro"
+    local pending_name = "balatro_export_pending.txt"
+    local pending_ok = false
+    pcall(function()
+        if love.filesystem.write(pending_name, out) then pending_ok = true end
+    end)
+    for _, path in ipairs({
+        save_dir .. "/" .. pending_name,
+        "/storage/emulated/0/Android/data/" .. pkg .. "/files/" .. pending_name,
+        "/sdcard/Android/data/" .. pkg .. "/files/" .. pending_name,
+    }) do
+        local f = io.open(path, "wb")
+        if f then
+            f:write(out)
+            f:close()
+            pending_ok = true
+        end
+    end
+
+    if pending_ok then
+        love.system.openURL("balatroexport://download")
+        attention_text({
+            text = "存档已导出到Download目录\n可分享文件到其它设备",
+            scale = 0.4,
+            hold = 5
+        })
+    else
+        attention_text({
+            text = "导出失败：无法写入文件",
+            scale = 0.4,
+            hold = 5
+        })
+    end
+end
+
+G.FUNCS.DT_import_save = function(e)
+    local clipboard = love.system.getClipboardText()
+    if not clipboard or clipboard == "" then
+        attention_text({
+            text = "剪贴板为空，请先复制导出 txt 全部内容",
+            scale = 0.4,
+            hold = 2.5
+        })
+        return
+    end
+
+    attention_text({text = "正在导入，请稍候…", scale = 0.4, hold = 1.2})
+
+    G.E_MANAGER:add_event(Event({
+        trigger = "after",
+        delay = 0.05,
+        func = function()
+            DT_block_saves(true)
+            DT_drain_save_queue()
+
+            local import_count = 0
+            local raw_map = {}
+
+            for line in clipboard:gmatch("[^\r\n]+") do
+                local name, b64_content = line:match("^FILE:([^:]+):(.+)$")
+                if name and b64_content then
+                    local rel = DT_map_export_name_to_local(name)
+                    if rel then
+                        local clean_b64 = b64_content:gsub("%s+", "")
+                        local ok, raw_content = pcall(function()
+                            return love.data.decode("string", "base64", clean_b64)
+                        end)
+                        if ok and raw_content and #raw_content > 0 then
+                            if DT_fs_write(rel, raw_content) then
+                                import_count = import_count + 1
+                                raw_map[rel] = raw_content
+                            end
+                        end
+                    end
+                end
+            end
+
+            if import_count > 0 then
+                DT_drain_save_queue()
+                DT_block_saves(true)
+                for rel, raw in pairs(raw_map) do
+                    DT_fs_write(rel, raw)
+                end
+                attention_text({
+                    text = "成功导入 " .. tostring(import_count) .. " 个文件\n即将重启，请勿操作",
+                    scale = 0.4,
+                    hold = 3
+                })
+                G.E_MANAGER:add_event(Event({
+                    trigger = "after",
+                    delay = 0.2,
+                    func = function()
+                        DT_drain_save_queue()
+                        DT_block_saves(true)
+                        for rel, raw in pairs(raw_map) do
+                            DT_fs_write(rel, raw)
+                        end
+                        G.E_MANAGER:add_event(Event({
+                            trigger = "after",
+                            delay = 0.25,
+                            func = function()
+                                DT_drain_save_queue()
+                                for rel, raw in pairs(raw_map) do
+                                    DT_fs_write(rel, raw)
+                                end
+                                love.event.quit("restart")
+                                return true
+                            end
+                        }))
+                        return true
+                    end
+                }))
+            else
+                DT_block_saves(false)
+                attention_text({
+                    text = "导入失败\n未写入有效存档文件\n请确认已全选复制导出内容",
+                    scale = 0.36,
+                    hold = 3
+                })
+            end
+            return true
+        end
+    }))
 end

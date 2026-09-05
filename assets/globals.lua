@@ -1,6 +1,4 @@
-VERSION = '1.0.1o'
-VERSION = VERSION..'-FULL'
-VERSION = VERSION..' [M]'
+VERSION = '1.0.1o 小丑牌更新发布群 600972171'
 --check_version
 
 --Globals
@@ -192,12 +190,20 @@ function Game:set_globals()
         ACHIEVEMENTS_EARNED = {},
         crashreports = false,
         colourblind_option = false,
-        language = 'en-us',
+        language = 'zh_CN',
         screenshake = true,
         run_stake_stickers = false,
         rumble = self.F_RUMBLE,
         play_button_pos = 2,
         GAMESPEED = 1,
+        preview_score = true,
+        skip_anim = false,
+        anim_delay = true,
+        anim_score = true,
+        anim_draw = true,
+        anim_ease = true,
+        anim_speed = false,
+        sl_history = {},
         paused = false,
         profile_counters = {0,0,0},
         SOUND = {

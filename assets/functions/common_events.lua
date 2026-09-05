@@ -362,9 +362,22 @@ function ease_background_colour_blind(state, blind_override)
 end
 
 function delay(time, queue)
+    time = time or 1
+    if G.SETTINGS.skip_anim and G.SETTINGS.anim_delay then
+        local st = G.STATE
+        local score_states = (st == G.STATES.HAND_PLAYED)
+        local draw_states = (st == G.STATES.DRAW_TO_HAND or st == G.STATES.NEW_ROUND)
+        if score_states and G.SETTINGS.anim_score then
+            time = math.max(time * 0.2, 0.02)
+        elseif draw_states and G.SETTINGS.anim_draw then
+            time = math.max(time * 0.2, 0.02)
+        elseif (not score_states) and (not draw_states) then
+            time = math.max(time * 0.3, 0.03)
+        end
+    end
     G.E_MANAGER:add_event(Event({
         trigger = 'after',
-        delay = time or 1,
+        delay = time,
         func = function()
            return true
         end
@@ -387,7 +400,10 @@ end
 
 function draw_card(from, to, percent, dir, sort, card, delay, mute, stay_flipped, vol, discarded_only)
     percent = percent or 50
-    delay = delay or 0.1 
+    delay = delay or 0.1
+    if G.SETTINGS.skip_anim and G.SETTINGS.anim_draw then
+        delay = math.max((delay or 0.1) * 0.2, 0.01)
+    end 
     if dir == 'down' then 
         percent = 1-percent
     end

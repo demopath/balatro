@@ -55,10 +55,9 @@ function save_callback(_file, _return_code, _error_string, _local, _remote, _con
 end
 
 function cloudsave(_file, _contents)
-    love.platform.saveGameFile(_file, compress_table_to_string(_contents))
+    love.mod_filesystem.write(_file, compress_table_to_string(_contents))
+    save_callback(_file, FOS.Success, '', nil, nil, nil)
 end
-
-love.platform.setSaveGameCallback(save_callback)
 
 local status, message = pcall(function()
     while true do
@@ -107,11 +106,7 @@ local status, message = pcall(function()
 
             request = IN_CHANNEL:pop()
         end
-
-        love.platform.runSaveGameCallbacks()
-
-        -- Yield to allow the game to continue running smoothly
-        love.timer.sleep(0.01)  -- Small sleep to avoid CPU hogging
+        love.timer.sleep(0.01)
     end
 end)
 

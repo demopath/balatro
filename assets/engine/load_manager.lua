@@ -92,17 +92,10 @@ local status, message = pcall(function()
         while request do
             -- Async Load
             if request.type == 'load_request' then
-                -- CLOUD SAVE
-                love.platform.loadGameFile(request.file)
+                fakeload(request.file, load_callback)
             end
-            
-            -- Check for the next message
             request = IN_CHANNEL:pop()
         end
-
-
-        -- Run callbacks every frame
-        love.platform.runLoadGameCallbacks()
 
         -- Yield to allow the game to continue running smoothly
         love.timer.sleep(0.01)  -- Small sleep to avoid CPU hogging

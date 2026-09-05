@@ -21,6 +21,14 @@ function Event:init(config)
     self.no_delete = config.no_delete
     self.created_on_pause = config.pause_force or G.SETTINGS.paused
     self.timer = config.timer or (self.created_on_pause and 'REAL') or 'TOTAL'
+    if G and G.SETTINGS and G.SETTINGS.skip_anim and self.timer ~= 'REAL' and self.delay > 0 then
+        local trig = self.trigger
+        if trig == 'ease' then
+            if G.SETTINGS.anim_ease then self.delay = math.max(self.delay * 0.25, 0.02) end
+        elseif G.SETTINGS.anim_delay then
+            self.delay = math.max(self.delay * 0.25, 0.02)
+        end
+    end
     
     if self.trigger == 'ease' then
         self.ease = {

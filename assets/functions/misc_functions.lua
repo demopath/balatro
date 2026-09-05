@@ -1277,6 +1277,7 @@ function check_profile(_profile_tab)
 end
 
 function set_profile_progress()
+  repair_profile()
   G.PROGRESS = G.PROGRESS or {
     joker_stickers = {tally = 0, of = 0},
     deck_stakes = {tally = 0, of = 0},
@@ -1313,6 +1314,7 @@ function set_profile_progress()
 end
 
 function set_discover_tallies()
+  repair_profile()
   G.DISCOVER_TALLIES = G.DISCOVER_TALLIES or {
       blinds = {tally = 0, of = 0},
       tags = {tally = 0, of = 0},
@@ -2013,6 +2015,27 @@ function RESET_STATES(state)
           s.created_on_state = state
       end
   end
+end
+
+function repair_profile(_profile)
+  _profile = _profile or (G.SETTINGS and G.SETTINGS.profile) or 1
+  G.PROFILES = G.PROFILES or {}
+  if type(G.PROFILES[_profile]) ~= 'table' then
+    G.PROFILES[_profile] = {}
+  end
+  local temp_profile = profile_init_table()
+  local recursive_init
+  recursive_init = function(t1, t2)
+    for k, v in pairs(t1) do
+      if type(t2[k]) ~= type(v) then
+        t2[k] = type(v) == 'table' and copy_table(v) or v
+      elseif type(v) == 'table' then
+        recursive_init(v, t2[k])
+      end
+    end
+  end
+  recursive_init(temp_profile, G.PROFILES[_profile])
+  return G.PROFILES[_profile]
 end
 
 function profile_init_table()

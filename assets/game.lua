@@ -39,6 +39,15 @@ function Game:start_up()
     self.SETTINGS.version = settings_ver or G.VERSION
     self.SETTINGS.profile = self.SETTINGS.profile or 1
     self.SETTINGS.paused = nil
+    if self.SETTINGS.preview_score == nil then self.SETTINGS.preview_score = true end
+    if self.SETTINGS.skip_anim == nil then self.SETTINGS.skip_anim = false end
+    if self.SETTINGS.anim_delay == nil then self.SETTINGS.anim_delay = true end
+    if self.SETTINGS.anim_score == nil then self.SETTINGS.anim_score = true end
+    if self.SETTINGS.anim_draw == nil then self.SETTINGS.anim_draw = true end
+    if self.SETTINGS.anim_ease == nil then self.SETTINGS.anim_ease = true end
+    self.SETTINGS.anim_queue = false
+    if self.SETTINGS.anim_speed == nil then self.SETTINGS.anim_speed = false end
+    self.SETTINGS.sl_history = self.SETTINGS.sl_history or {}
 
     local new_colour_proto = self.C["SO_"..(self.SETTINGS.colourblind_option and 2 or 1)]
     self.C.SUITS.Hearts = new_colour_proto.Hearts
@@ -73,7 +82,7 @@ function Game:start_up()
         end
     end
 
-    self.SETTINGS.language = self.SETTINGS.language or 'en-us'
+    self.SETTINGS.language = self.SETTINGS.language or 'zh_CN'
     
     -- :MDM: moving init window to before splash video
     --boot_timer('settings', 'window init', 0.2)
@@ -157,7 +166,7 @@ function Game:start_up()
         self.SETTINGS.GRAPHICS.texture_scaling = self.SETTINGS.GRAPHICS.texture_scaling > 1 and 2 or 1
     end
 
-    --self:load_profile()
+    self:load_profile(G.SETTINGS.profile or 1)
 
     self.SETTINGS.QUEUED_CHANGE = {}
     self.SETTINGS.music_control = {desired_track = '', current_track = '', lerp = 1} 
@@ -209,8 +218,7 @@ function Game:start_up()
 
     fetch_achievements()
 
-    --self:load_profile(G.SETTINGS.profile or 1)
-    --set_profile_progress()
+    set_profile_progress()
     boot_timer('prep stage', 'splash prep',1)
     self:splash_screen()
     boot_timer('splash prep', 'end',1)
@@ -863,6 +871,11 @@ function Game:init_item_prototypes()
 end
 
 function Game:load_profile(_profile)
+    -- 强制关闭云同步等待逻辑，防止卡在加载界面
+    G.WAIT_FOR_GPG_SYNC = false
+    G.GPG_SYNC_COMPLETE = true
+    if G.F_GPG_SYNC then G.F_GPG_SYNC = false end
+
     if not G.PROFILES[_profile] then _profile = 1 end
     G.PROFILES[_profile] = {}
 
@@ -887,6 +900,8 @@ function Game:load_profile(_profile)
     end
 
     recursive_init(temp_profile, G.PROFILES[_profile])
+
+    repair_profile(_profile)
 
     G.PROFILES[_profile].ver = math.max(G.PROFILES[_profile].ver or 0, G.SETTINGS.profile_counters[_profile] or 0)
     --G.FILES[_profile..'/profile.jkr'] = G.PROFILES[G.SETTINGS.profile]
@@ -1252,16 +1267,9 @@ end
 
 function Game:load_file(_file)
     G.LOAD_HANDLER = G.LOAD_HANDLER or {}
-
-    if G.LOAD_HANDLER.LOCAL_FILES and G.LOAD_HANDLER.LOCAL_FILES[_file] then
-        G.FILES[_file] = load_local_file(_file)
+    G.FILES[_file] = load_local_file(_file)
+    if G.LOAD_HANDLER.FILE_STATUS and G.LOAD_HANDLER.FILE_STATUS[_file] then
         G.LOAD_HANDLER.FILE_STATUS[_file]._status = G.FILES[_file] and 'OK' or 'NOT FOUND'
-    else
-        G.LOAD_MANAGER.request_channel:push({
-            type = 'load_request',
-            file = _file
-          })
-        G.LOAD_HANDLER.loading = true
     end
 end
 
@@ -1665,17 +1673,8 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
     --love.platform = {}
     --love.platform.isOffline = function() return (math.random() > 0.5) end
 
-    if not G.offline_warned and love.platform and love.platform.isOffline then
-        if love.platform.isOffline() then
-            G:show_offline_message()
-            return
-        end
-    end
-    
-    if G.LOAD_HANDLER.loading then 
-        G:wait_for_async()
-        return
-    end
+    G.offline_warned = true
+    if G.LOAD_HANDLER then G.LOAD_HANDLER.loading = nil end
     
     if change_context ~= 'splash' then 
         --Skip the timer to 14 seconds for all shaders that need it
@@ -1898,7 +1897,8 @@ function Game:main_menu(change_context) --True if main menu is accessed from the
         }))
 
     --Do all career stat unlock checking here as well
-    for k, v in pairs(G.PROFILES[G.SETTINGS.profile].career_stats) do
+    local _prof = repair_profile(G.SETTINGS.profile or 1)
+    for k, v in pairs(_prof.career_stats) do
         check_for_unlock({type = 'career_stat', statname = k})
     end
     check_for_unlock({type = 'blind_discoveries'})
@@ -2722,13 +2722,17 @@ function Game:update(dt)
         G.ACC_state = G.STATE
 
         if (G.STATE == G.STATES.HAND_PLAYED) or (G.STATE == G.STATES.NEW_ROUND) then 
-            G.ACC = math.min((G.ACC or 0) + dt*0.2*self.SETTINGS.GAMESPEED, 16)
+            local acc_cap = (self.SETTINGS.skip_anim and self.SETTINGS.anim_speed) and 48 or 16
+            G.ACC = math.min((G.ACC or 0) + dt*0.2*self.SETTINGS.GAMESPEED, acc_cap)
         else
             G.ACC = 0
         end
 
         self.SPEEDFACTOR = (G.STAGE == G.STAGES.RUN and not G.SETTINGS.paused and not G.screenwipe) and self.SETTINGS.GAMESPEED or 1
         self.SPEEDFACTOR = self.SPEEDFACTOR + math.max(0, math.abs(G.ACC) - 2)
+        if self.SETTINGS.skip_anim and self.SETTINGS.anim_speed and self.STAGE == G.STAGES.RUN and not self.SETTINGS.paused then
+            self.SPEEDFACTOR = self.SPEEDFACTOR * 3
+        end
 
         self.TIMERS.TOTAL = self.TIMERS.TOTAL + dt*(self.SPEEDFACTOR)
 
@@ -3019,7 +3023,15 @@ function Game:update(dt)
     G.PROFILES[G.SETTINGS.profile].deleted = nil
     
     --Save every 10 seconds, unless forced or paused/unpaused
-    if G.FILE_HANDLER and G.FILE_HANDLER.update_queued and (not G.LOAD_HANDLER.loading) and (
+    if G.DT_BLOCK_SAVE then
+        G.FILE_HANDLER = G.FILE_HANDLER or {}
+        G.FILE_HANDLER.update_queued = false
+        G.FILE_HANDLER.progress = nil
+        G.FILE_HANDLER.run = nil
+        G.FILE_HANDLER.settings = nil
+        G.FILE_HANDLER.empty_profile = nil
+        G.FILE_HANDLER.force = false
+    elseif G.FILE_HANDLER and G.FILE_HANDLER.update_queued and (not G.LOAD_HANDLER.loading) and (
         G.FILE_HANDLER.force or 
         G.FILE_HANDLER.last_sent_stage ~= G.STAGE or
         ((G.FILE_HANDLER.last_sent_pause ~= G.SETTINGS.paused) and G.FILE_HANDLER.run) or

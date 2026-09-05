@@ -205,7 +205,7 @@ end
 
 function create_UIBox_loading_screen()
   local t = {n=G.UIT.ROOT, config = {align = 'cm', r = 0.1, colour = G.C.CLEAR}, nodes={
-    {n=G.UIT.O, config={object = DynaText({string = {'Loading Cloud save...'}, colours = {G.C.WHITE},shadow = true, bump = true, scale = 0.5}),}},
+    {n=G.UIT.O, config={object = DynaText({string = {'正在加载云存档...'}, colours = {G.C.WHITE},shadow = true, bump = true, scale = 0.5}),}},
   }}
 return t
 end
@@ -2314,50 +2314,173 @@ function create_dynatext_pips(args)
   return {n=G.UIT.R, config={padding = 0.05, align = "cm"}, nodes=pips}
 end
 
-function create_UIBox_options()  
-  local current_seed = nil
-  local restart = nil
-  local main_menu = nil
-  local your_collection = nil
-  local credits = nil
+
+function create_UIBox_options()
+  local current_seed, restart, main_menu, your_collection, credits = nil, nil, nil, nil, nil
+  -- 定义 SL 相关按钮变量
+  local sl_save, sl_load, sl_export, sl_import, quick_restart = nil, nil, nil, nil, nil
 
   G.E_MANAGER:add_event(Event({
     blockable = false,
     func = function()
       G.REFRESH_ALERTS = true
-    return true
+      return true
     end
   }))
 
   if G.STAGE == G.STAGES.RUN then
-    restart = UIBox_button{id = 'restart_button', label = {localize('b_start_new_run')}, button = "setup_run", minw = 5}
-    main_menu = UIBox_button{ label = {localize('b_main_menu')}, button = "go_to_menu", minw = 5}
-    your_collection = UIBox_button{ label = {localize('b_collection')}, button = "your_collection", minw = 5, id = 'your_collection'}
-    current_seed = {n=G.UIT.R, config={align = "cm", padding = 0.05}, nodes={
-        {n=G.UIT.C, config={align = "cm", padding = 0}, nodes={
-        {n=G.UIT.T, config={text = localize('b_seed')..": ", scale = 0.4, colour = G.C.WHITE}}
-      }},
-      {n=G.UIT.C, config={align = "cm", padding = 0, minh = 0.8}, nodes={
-        {n=G.UIT.C, config={align = "cm", padding = 0, minh = 0.8}, nodes={
-          {n=G.UIT.R, config={align = "cm", r = 0.1, colour = G.GAME.seeded and G.C.RED or G.C.BLACK, minw = 1.8, minh = 0.5, padding = 0.1, emboss = 0.05}, nodes={
-            {n=G.UIT.C, config={align = "cm"}, nodes={
-              {n=G.UIT.T, config={ text = tostring(G.GAME.pseudorandom.seed), scale = 0.43, colour = G.C.UI.TEXT_LIGHT, shadow = true}}
-            }}
-          }}
-        }}
-      }},
-      UIBox_button({col = true, button = 'copy_seed', label = {localize('b_copy')}, colour = G.C.BLUE, scale = 0.3, minw = 1.3, minh = 0.5,}),
-    }}
+    sl_save = UIBox_button{
+      label = {"存储进度"},
+      button = "DT_new_save",
+      minw = 5,
+      minh = 0.88,
+      scale = 0.555,
+      colour = G.C.BLUE
+    }
+
+    sl_load = UIBox_button{
+      label = {"读取进度"},
+      button = "DT_new_load",
+      minw = 5,
+      minh = 0.88,
+      scale = 0.55,
+      colour = G.C.GREEN
+    }
+
+    quick_restart = UIBox_button{
+      label = {"快速重开"},
+      button = "DT_new_run",
+      minw = 5,
+      minh = 0.88,
+      scale = 0.55,
+      colour = G.C.RED
+    }
+
+    restart = UIBox_button{
+      id = 'restart_button',
+      label = {localize('b_start_new_run')},
+      button = "setup_run",
+      minw = 5,
+      minh = 0.88,
+      scale = 0.55
+    }
+
+    main_menu = UIBox_button{
+      label = {localize('b_main_menu')},
+      button = "go_to_menu",
+      minw = 5,
+      minh = 0.88,
+      scale = 0.55
+    }
+
+    your_collection = UIBox_button{
+      label = {localize('b_collection')},
+      button = "your_collection",
+      minw = 5,
+      id = 'your_collection',
+      minh = 0.88,
+      scale = 0.55
+    }
+
+    current_seed = {
+      n = G.UIT.R,
+      config = {align = "cm", padding = 0.02},
+      nodes = {
+        {
+          n = G.UIT.C,
+          config = {align = "cm", padding = 0},
+          nodes = {
+            {n = G.UIT.T, config = {text = localize('b_seed') .. ": ", scale = 0.35, colour = G.C.WHITE}}
+          }
+        },
+        {
+          n = G.UIT.C,
+          config = {align = "cm", padding = 0, minh = 0.6},
+          nodes = {
+            {
+              n = G.UIT.R,
+              config = {
+                align = "cm",
+                r = 0.1,
+                colour = G.GAME.seeded and G.C.RED or G.C.BLACK,
+                minw = 1.8,
+                minh = 0.4,
+                padding = 0.05,
+                emboss = 0.05
+              },
+              nodes = {
+                {
+                  n = G.UIT.C,
+                  config = {align = "cm"},
+                  nodes = {
+                    {
+                      n = G.UIT.T,
+                      config = {
+                        text = tostring(G.GAME.pseudorandom.seed),
+                        scale = 0.4,
+                        colour = G.C.UI.TEXT_LIGHT,
+                        shadow = true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        UIBox_button({
+          col = true,
+          button = 'copy_seed',
+          label = {localize('b_copy')},
+          colour = G.C.BLUE,
+          scale = 0.3,
+          minw = 1.2,
+          minh = 0.4
+        }),
+      }
+    }
   end
+
   if G.STAGE == G.STAGES.MAIN_MENU then
-    credits = UIBox_button{ label = {localize('b_credits')}, button = "show_credits", minw = 5}
+    credits = UIBox_button{
+      label = {localize('b_credits')},
+      button = "show_credits",
+      minw = 5,
+      minh = 0.55
+    }
   end
 
-  local settings = UIBox_button({button = 'settings', label = {localize('b_settings')}, minw = 5, focus_args = {snap_to = true}})
-  local high_scores = UIBox_button{ label = {localize('b_stats')}, button = "high_scores", minw = 5}
-  local customize = UIBox_button{ label = {localize('b_customize_deck')}, button = "customize_deck", minw = 5}
+  local in_run = G.STAGE == G.STAGES.RUN
+  local btn_h = in_run and 0.88 or 0.55
+  local btn_s = in_run and 0.55 or 0.45
 
-  local t = create_UIBox_generic_options({ contents = {
+  local settings = UIBox_button({
+    button = 'settings',
+    label = {localize('b_settings')},
+    minw = 5,
+    minh = btn_h,
+    scale = btn_s,
+    focus_args = {snap_to = true}
+  })
+
+  local high_scores = (not in_run) and UIBox_button{
+    label = {localize('b_stats')},
+    button = "high_scores",
+    minw = 5,
+    minh = btn_h,
+    scale = btn_s
+  } or nil
+
+  local customize = (not in_run) and UIBox_button{
+    label = {localize('b_customize_deck')},
+    button = "customize_deck",
+    minw = 5,
+    minh = btn_h,
+    scale = btn_s
+  } or nil
+
+  local t = create_UIBox_generic_options({
+    contents = {
       settings,
       G.GAME.seeded and current_seed or nil,
       restart,
@@ -2365,10 +2488,16 @@ function create_UIBox_options()
       high_scores,
       your_collection,
       customize,
+      sl_save,
+      sl_load,
+      quick_restart,
       credits
-    }})
+    }
+  })
+
   return t
 end
+
 
 function create_UIBox_settings()
   local tabs = {}
@@ -2394,6 +2523,16 @@ function create_UIBox_settings()
     tab_definition_function = G.UIDEF.settings_tab,
     tab_definition_function_args = 'Audio'
   }
+  tabs[#tabs+1] = {
+    label = '修改版设置',
+    tab_definition_function = G.UIDEF.settings_tab,
+    tab_definition_function_args = 'Save'
+  }
+  tabs[#tabs+1] = {
+    label = '动画加速',
+    tab_definition_function = G.UIDEF.settings_tab,
+    tab_definition_function_args = 'Anim'
+  }
 
   local t = create_UIBox_generic_options({back_func = 'options',contents = {create_tabs(
     {tabs = tabs,
@@ -2406,8 +2545,16 @@ end
 
 function G.UIDEF.settings_tab(tab)
   if tab == 'Game' then
+    -- 定义速度选项数组
+    local speed_options = {0.5, 1, 2, 4, 8, 12, 16, 25, 32, 46, 54, 60, 75, 95, 110, 125, 256, 512, 1024, 2048}
+    -- 查找当前设置在数组中的索引，若找不到则默认为 1 倍速 (索引 2)
+    local current_speed_idx = 2
+    for i, v in ipairs(speed_options) do
+      if G.SETTINGS.GAMESPEED == v then current_speed_idx = i break end
+    end
+
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
-      create_option_cycle({label = localize('b_set_gamespeed'),scale = 0.8, options = {0.5, 1, 2, 4}, opt_callback = 'change_gamespeed', current_option = (G.SETTINGS.GAMESPEED == 0.5 and 1 or G.SETTINGS.GAMESPEED == 4 and 4 or G.SETTINGS.GAMESPEED + 1)}),
+      create_option_cycle({label = localize('b_set_gamespeed'), scale = 0.8, options = speed_options, opt_callback = 'change_gamespeed', current_option = current_speed_idx}),
       create_option_cycle({w = 5, label = localize('b_set_play_discard_pos'),scale = 0.8, options = localize('ml_play_discard_pos_opt'), opt_callback = 'change_play_discard_position', current_option = (G.SETTINGS.play_button_pos)}),
       G.F_RUMBLE and create_toggle({w = 1, label = localize(G.F_MOBILE and 'b_set_vibration' or 'b_set_rumble'), ref_table = G.SETTINGS, ref_value = 'rumble'}) or nil,
       create_slider({label = localize('b_set_screenshake'),w = 4, h = 0.4, ref_table = G.SETTINGS, ref_value = 'screenshake', min = 0, max = 100}),
@@ -2415,16 +2562,13 @@ function G.UIDEF.settings_tab(tab)
       create_toggle({label = localize('b_high_contrast_cards'), ref_table = G.SETTINGS, ref_value = 'colourblind_option', callback = G.FUNCS.refresh_contrast_mode}),
       create_toggle({label = localize('b_reduced_motion'), ref_table = G.SETTINGS, ref_value = 'reduced_motion'}),
       G.F_CRASH_REPORTS and create_toggle({label = localize('b_set_crash_reports'), ref_table = G.SETTINGS, ref_value = 'crashreports', info = localize('ml_crash_report_info')}) or nil,
+      create_toggle({label = '选牌预览最终得分', ref_table = G.SETTINGS, ref_value = 'preview_score', callback = G.FUNCS.DT_toggle_preview}),
     }}
   elseif tab == 'Video' then
-    --Reset the queue so there are no pending changes
     G.SETTINGS.QUEUED_CHANGE = {}
-  
-    --Refresh the display information for all displays based on the screenmode selected
     local res_option = GET_DISPLAYINFO(G.SETTINGS.WINDOW.screenmode, G.SETTINGS.WINDOW.selected_display)
   
-    return 
-    {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
+    return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
         create_option_cycle({w = 4,scale = 0.8, label = localize('b_set_monitor'), options = G.SETTINGS.WINDOW.display_names, opt_callback = 'change_display', current_option = (G.SETTINGS.WINDOW.selected_display)}),
         create_option_cycle({w = 4,scale = 0.8, label = localize('b_set_windowmode'), options = localize('ml_windowmode_opt'), opt_callback = 'change_screenmode', current_option = (({Windowed = 1, Fullscreen = 2, Borderless = 3})[G.SETTINGS.WINDOW.screenmode] or 1)}),
         {n=G.UIT.R, config={align = "cm", id = 'resolution_cycle'}, nodes={create_option_cycle({w = 4,scale = 0.8, options = G.SETTINGS.WINDOW.DISPLAYS[G.SETTINGS.WINDOW.selected_display].screen_resolutions.strings, opt_callback = 'change_screen_resolution',current_option = res_option or 1})}},
@@ -2437,17 +2581,82 @@ function G.UIDEF.settings_tab(tab)
       create_slider({label = localize('b_set_music_vol'), w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'music_volume', min = 0, max = 100}),
       create_slider({label = localize('b_set_game_vol'), w = 5, h = 0.4, ref_table = G.SETTINGS.SOUND, ref_value = 'game_sounds_volume', min = 0, max = 100}),
     }}
+  elseif tab == 'Save' then
+    local hist = G.SETTINGS.sl_history or {}
+    local nodes = {
+      {n=G.UIT.R, config={align='cm', padding=0.02}, nodes={
+        {n=G.UIT.T, config={text='近期快速存档', scale=0.32, colour=G.C.UI.TEXT_LIGHT}}
+      }},
+    }
+    for i = 1, 5 do
+      local item = hist[i]
+      nodes[#nodes+1] = UIBox_button({
+        label = {item and (i..'  '..item.time) or (i..'  空')},
+        button = item and 'DT_load_hist' or nil,
+        ref_table = {idx = i},
+        minw = 5.6,
+        minh = 1.1,
+        scale = 0.32,
+        colour = item and G.C.BLUE or G.C.UI.TRANSPARENT_DARK
+      })
+    end
+    nodes[#nodes+1] = {n=G.UIT.R, config={align='cm', padding=0.06}, nodes={
+      UIBox_button({
+        label = {'导出存档文件'},
+        button = 'DT_export_save',
+        minw = 2.8,
+        minh = 0.55,
+        scale = 0.32,
+        colour = G.C.RED,
+        col = true
+      }),
+      UIBox_button({
+        label = {'导入存档文件'},
+        button = 'DT_import_save',
+        minw = 2.8,
+        minh = 0.55,
+        scale = 0.32,
+        colour = G.C.ORANGE,
+        col = true
+      }),
+    }}
+    return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes=nodes}
+
+  elseif tab == 'Anim' then
+    local tip = function(s)
+      return {n=G.UIT.R, config={align='cm', padding=0.01}, nodes={
+        {n=G.UIT.T, config={text=s, scale=0.24, colour=G.C.UI.TEXT_INACTIVE}}
+      }}
+    end
+    local tg = function(label, key)
+      return create_toggle({label = label, ref_table = G.SETTINGS, ref_value = key, callback = G.FUNCS.DT_toggle_skip_anim})
+    end
+    return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
+      tg('加速总开关', 'skip_anim'),
+      tip('总闸门：关闭后下方全部加速项都不生效'),
+      tip('以下各项需先开启加速总开关才会生效'),
+      tg('缩短等待间隔', 'anim_delay'),
+      tip('压缩各类通用停顿/等待时间，整体节奏更紧凑'),
+      tg('加快出牌计分过程', 'anim_score'),
+      tip('打出手牌后，逐张牌计分、特效播放明显加快'),
+      tg('加快摸牌/弃牌', 'anim_draw'),
+      tip('从牌堆抽牌、弃牌飞入弃牌堆的移动动画更快'),
+      tg('加快分数数字滚动', 'anim_ease'),
+      tip('筹码、倍率、总分等数字滚动跳变动画更快结束'),
+      tg('激进:额外倍速加成', 'anim_speed'),
+      tip('额外提高动画推进速度，会非常快，不适应请关闭'),
+    }}
+
   elseif tab == 'Graphics' then 
     return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR}, nodes={
       create_option_cycle({w = 4,scale = 0.8, label = localize("b_set_shadows"),options = localize('ml_shadow_opt'), opt_callback = 'change_shadows', current_option = (G.SETTINGS.GRAPHICS.shadows == 'On' and 1 or 2)}),
       create_option_cycle({w = 4,scale = 0.8, label = localize("b_set_pixel_smoothing"),options = localize('ml_smoothing_opt'), opt_callback = 'change_pixel_smoothing', current_option = G.SETTINGS.GRAPHICS.texture_scaling}),
       create_slider({label = localize('b_set_CRT'),w = 4, h = 0.4, ref_table = G.SETTINGS.GRAPHICS, ref_value = 'crt', min = 0, max = 100}),
-      --create_option_cycle({w = 4,scale = 0.8, label = localize("b_set_CRT_bloom"),options = localize('ml_bloom_opt'), opt_callback = 'change_crt_bloom', current_option = G.SETTINGS.GRAPHICS.bloom}),
     }}
   end
-
   return {n=G.UIT.ROOT, config={align = "cm", padding = 0.05, colour = G.C.CLEAR, minh = 5, minw = 5}, nodes={}}
 end
+
 
 function create_UIBox_test_framework(variables)
   variables = variables or {};
@@ -2974,10 +3183,10 @@ end
 function create_UIBox_game_over()
   local show_lose_cta = false
 
-
   local eased_red = copy_table(G.GAME.round_resets.ante <= G.GAME.win_ante and G.C.RED or G.C.BLUE)
   eased_red[4] = 0
   ease_value(eased_red, 4, 0.8, nil, nil, true)
+  
   local t = create_UIBox_generic_options({ bg_colour = eased_red ,no_back = true, padding = 0, contents = {
     {n=G.UIT.R, config={align = "cm"}, nodes={
       {n=G.UIT.O, config={object = DynaText({string = {localize('ph_game_over')}, colours = {G.C.RED},shadow = true, float = true, scale = 1.5, pop_in = 0.4, maxw = 6.5})}},
@@ -3006,23 +3215,23 @@ function create_UIBox_game_over()
             }}
           }}
         }},
-        show_lose_cta and 
+        -- 这里是原本底部的按钮区
         {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
-          {n=G.UIT.C, config={id = 'lose_cta', align = "cm", minw = 5, padding = 0.1, r = 0.1, hover = true, colour = G.C.GREEN, button = "show_main_cta", shadow = true}, nodes={
-            {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true}, nodes={
-              {n=G.UIT.T, config={text = localize('b_next'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT, focus_args = {nav = 'wide', snap_to = true}}}
-            }}
-          }}
-        }} or
-        {n=G.UIT.R, config={align = "cm", padding = 0.1}, nodes={
-          {n=G.UIT.R, config={id = 'from_game_over', align = "cm", minw = 5, padding = 0.1, r = 0.1, hover = true, colour = G.C.RED, button = "notify_then_setup_run", shadow = true, focus_args = {nav = 'wide', snap_to = true}}, nodes={
+          -- 第一个大按钮：替换为“读取进度”
+          {n=G.UIT.R, config={id = 'from_game_over', align = "cm", minw = 5, padding = 0.1, r = 0.1, hover = true, colour = G.C.GREEN, button = "DT_new_load", shadow = true, focus_args = {nav = 'wide', snap_to = true}}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true, maxw = 4.8}, nodes={
-              {n=G.UIT.T, config={text = localize('b_start_new_run'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}}
+              {n=G.UIT.T, config={text = "载入上次存档", scale = 0.5, colour = G.C.UI.TEXT_LIGHT}}
             }}
           }},
-          {n=G.UIT.R, config={align = "cm", minw = 5, padding = 0.1, r = 0.1, hover = true, colour = G.C.RED, button = "go_to_menu", shadow = true, focus_args = {nav = 'wide'}}, nodes={
+          -- 第二个大按钮：替换为“快速重开”
+          {n=G.UIT.R, config={align = "cm", minw = 5, padding = 0.1, r = 0.1, hover = true, colour = G.C.ORANGE, button = "DT_new_run", shadow = true, focus_args = {nav = 'wide'}}, nodes={
             {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true, maxw = 4.8}, nodes={
-              {n=G.UIT.T, config={text = localize('b_main_menu'), scale = 0.5, colour = G.C.UI.TEXT_LIGHT}}
+              {n=G.UIT.T, config={text = "重新开始", scale = 0.5, colour = G.C.UI.TEXT_LIGHT}}
+            }}
+          }},
+          {n=G.UIT.R, config={align = "cm", minw = 5, padding = 0.1, r = 0.1, hover = true, colour = G.C.RED, button = "DT_go_to_menu", shadow = true, focus_args = {nav = 'wide'}, minh = 0.6}, nodes={
+            {n=G.UIT.R, config={align = "cm", padding = 0, no_fill = true, maxw = 4.8}, nodes={
+              {n=G.UIT.T, config={text = "回到主选单", scale = 0.5, colour = G.C.UI.TEXT_LIGHT}}
             }}
           }}
         }}
@@ -3038,9 +3247,10 @@ function create_UIBox_game_over()
     {n=G.UIT.C, config={align = "cm", padding = 0.1}, nodes={t.nodes[1]}}}
 }
 
-  --t.nodes[1].config.mid = true
   return t
 end
+
+
 
 function create_UIBox_round_scores_row(score, text_colour)
   local label = G.GAME.round_scores[score] and localize('ph_score_'..score) or ''
@@ -6373,6 +6583,14 @@ function create_UIBox_main_menu_buttons()
         }},
       }},
       {n=G.UIT.C, config={align = "br", minw = 3.2, padding = 0.1}, nodes={
+        {n=G.UIT.R, config = {align = "cm", padding = 0.2}, nodes={
+          {n=G.UIT.C, config={align = "cm", padding = 0.12, r = 0.1, hover = true, colour = HEX('12B7F5'), button = 'go_to_qq', shadow = true, minw = 0.85, minh = 0.85}, nodes={
+            {n=G.UIT.T, config={text = "QQ", scale = 0.36, colour = G.C.WHITE, shadow = true}},
+          }},
+          {n=G.UIT.C, config={align = "cm", padding = 0.12, r = 0.1, hover = true, colour = HEX('FB7299'), button = 'go_to_bilibili', shadow = true, minw = 0.85, minh = 0.85}, nodes={
+            {n=G.UIT.T, config={text = "B站", scale = 0.32, colour = G.C.WHITE, shadow = true}},
+          }}
+        }},
         G.F_LINKTREE and {n=G.UIT.R, config={align = "cm"}, nodes={
           {n=G.UIT.R, config={align = "cm", padding = 0.1, r = 0.1, hover = true, colour = mix_colours(G.C.BLUE, G.C.GREY, 0.4), button = 'link_tree', shadow = true}, nodes={
             {n=G.UIT.O, config={object = linktree}},
