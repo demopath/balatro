@@ -12,7 +12,7 @@ return {
             b_anaglyph={
                 name="浮雕牌组",
                 text={
-                    "每次击败{C:attention}Boss盲注{}后",
+                    "每次击败{C:attention}Boss回合{}后",
                     "获得一个{C:attention,T:tag_double}#1#",
                 },
             },
@@ -99,13 +99,13 @@ return {
                 text={
                     "计算出牌分数时",
                     "平衡{C:blue}筹码{}和{C:red}倍率{}",
-                    "盲注要求分数{C:red}X#1#{}",
+                    "回合要求分数{C:red}X#1#{}",
                 },
             },
             b_red={
                 name="红色牌组",
                 text={
-                    "每回合",
+                    "每分数",
                     "{C:red}+#1#{}次弃牌",
                 },
             },
@@ -135,7 +135,7 @@ return {
                 },
             },
             bl_big={
-                name="大盲注",
+                name="大回合",
                 text={
                 },
             },
@@ -184,7 +184,7 @@ return {
             bl_final_vessel={
                 name="靛紫之杯",
                 text={
-                    "超大盲注",
+                    "超大回合",
                 },
             },
             bl_fish={
@@ -265,7 +265,7 @@ return {
             bl_pillar={
                 name="支柱",
                 text={
-                    "在这一底注中",
+                    "在这一关卡中",
                     "打出过的牌都被削弱",
                 },
             },
@@ -290,7 +290,7 @@ return {
                 },
             },
             bl_small={
-                name="小盲注",
+                name="小回合",
                 text={
                 },
             },
@@ -304,7 +304,7 @@ return {
             bl_wall={
                 name="围墙",
                 text={
-                    "特大盲注",
+                    "特大回合",
                 },
             },
             bl_water={
@@ -587,7 +587,7 @@ return {
             j_burglar={
                 name="窃贼",
                 text={
-                    "选择{C:attention}盲注{}后",
+                    "选择{C:attention}回合{}后",
                     "出牌次数{C:red}+#1#{}，并",
                     "{C:attention}失去所有弃牌次数",
                 },
@@ -630,7 +630,7 @@ return {
                 text={
                     "每{C:attention}售出{}一张牌",
                     "这张小丑牌获得{X:mult,C:white}X#1#{}倍率",
-                    "{C:attention}Boss盲注{}被击败时重置倍率",
+                    "{C:attention}Boss回合{}被击败时重置倍率",
                     "{C:inactive}（当前为{X:mult,C:white}X#2#{C:inactive}倍率）",
                 },
             },
@@ -645,7 +645,7 @@ return {
             j_cartomancer={
                 name="卡牌术士",
                 text={
-                    "在选择{C:attention}盲注{}时",
+                    "在选择{C:attention}回合{}时",
                     "生成一张{C:tarot}塔罗牌{}",
                     "{C:inactive}（必须有空位）",
                 },
@@ -675,7 +675,7 @@ return {
             j_ceremonial={
                 name="仪式匕首",
                 text={
-                    "在选择{C:attention}盲注{}时",
+                    "在选择{C:attention}回合{}时",
                     "摧毁右侧的小丑牌",
                     "并将其售价的{C:attention}两倍",
                     "永久添加至这张牌的{C:attention}倍率",
@@ -700,13 +700,13 @@ return {
                 name="混沌小丑",
                 text={
                     "每次商店",
-                    "{C:green}#1#{}次免费重掷",
+                    "{C:green}#1#{}次免费重置",
                 },
             },
             j_chicot={
                 name="希科",
                 text={
-                    "所有{C:attention}Boss盲注",
+                    "所有{C:attention}Boss回合",
                     "限制条件消失",
                 },
                 unlock={
@@ -902,7 +902,7 @@ return {
             j_flash={
                 name="闪示卡",
                 text={
-                    "在商店中每{C:attention}重掷{}一次",
+                    "在商店中每{C:attention}重置{}一次",
                     "这张小丑牌获得{C:mult}+#1#{}倍率",
                     "{C:inactive}（当前为{C:mult}+#2#{C:inactive}倍率）",
                 },
@@ -916,7 +916,7 @@ return {
                     "则{X:mult,C:white} X#1# {}倍率",
                 },
                 unlock={
-                    "达到底注",
+                    "达到关卡",
                     "等级{E:1,C:attention}#1#",
                 },
             },
@@ -1033,7 +1033,7 @@ return {
                 },
                 unlock={
                     "用{E:1,C:attention}#1#",
-                    "打赢Boss盲注",
+                    "打赢Boss回合",
                 },
             },
             j_hiker={
@@ -1135,7 +1135,7 @@ return {
                 text={
                     "售出这张小丑牌",
                     "会消除当前回合中",
-                    "{C:attention}Boss盲注{}的限制条件",
+                    "{C:attention}Boss回合{}的限制条件",
                 },
             },
             j_lucky_cat={
@@ -1166,7 +1166,7 @@ return {
             j_madness={
                 name="疯狂",
                 text={
-                    "在{C:attention}小盲注{}或{C:attention}大盲注{}被选中时",
+                    "在{C:attention}小回合{}或{C:attention}大回合{}被选中时",
                     "这张小丑牌获得{X:mult,C:white}X#1#{}倍率",
                     "然后随机{C:attention}摧毁{}一张小丑牌",
                     "{C:inactive}（当前为{X:mult,C:white}X#2#{}倍率）",
@@ -1183,7 +1183,7 @@ return {
             j_marble={
                 name="大理石小丑",
                 text={
-                    "选择{C:attention}盲注{}后",
+                    "选择{C:attention}回合{}后",
                     "牌组中会添加",
                     "一张{C:attention}石头{}牌",
                 },
@@ -1192,13 +1192,13 @@ return {
                 name="斗牛士",
                 text={
                     "如果出牌触发了",
-                    "{C:attention}Boss盲注{}的限制条件",
+                    "{C:attention}Boss回合{}的限制条件",
                     "获得{C:money}$#1#{}",
                 },
                 unlock={
                     "不使用弃牌且",
                     "只用{E:1,C:attention}一次出牌{}",
-                    "打赢Boss盲注",
+                    "打赢Boss回合",
                 },
             },
             j_merry_andy={
@@ -1397,7 +1397,7 @@ return {
             j_riff_raff={
                 name="乌合之众",
                 text={
-                    "在选择{C:attention}盲注{}时",
+                    "在选择{C:attention}回合{}时",
                     "生成{C:attention}#1#张{C:blue}普通{C:attention}小丑牌",
                     "{C:inactive}（必须有空间）",
                 },
@@ -1410,7 +1410,7 @@ return {
                     "出现复数张",
                 },
                 unlock={
-                    "达到底注",
+                    "达到关卡",
                     "等级{E:1,C:attention}#1#",
                 },
             },
@@ -1418,7 +1418,7 @@ return {
                 name="火箭",
                 text={
                     "每个回合结束时你获得{C:money}$#1#{}",
-                    "击败{C:attention}Boss盲注{}",
+                    "击败{C:attention}Boss回合{}",
                     "会使这一金额增加{C:money}$#2#{}",
                 },
             },
@@ -1675,7 +1675,7 @@ return {
                 name="回溯",
                 text={
                     "本赛局内每跳过一次",
-                    "{C:attention}盲注{}，获得{X:mult,C:white}X#1#{}倍率",
+                    "{C:attention}回合{}，获得{X:mult,C:white}X#1#{}倍率",
                     "{C:inactive}（当前为{X:mult,C:white} X#2# {C:inactive}倍率）",
                 },
                 unlock={
@@ -2562,7 +2562,7 @@ return {
             stake_green={
                 name="绿注",
                 text={
-                    "{C:attention}底注{}提升时",
+                    "{C:attention}关卡{}提升时",
                     "过关需求分数的增速更快",
                     "{s:0.8}之前所有赌注也都起效",
                 },
@@ -2578,7 +2578,7 @@ return {
             stake_purple={
                 name="紫注",
                 text={
-                    "{C:attention}底注{}提升时",
+                    "{C:attention}关卡{}提升时",
                     "过关需求分数的增速更快",
                     "{s:0.8}之前所有赌注也都起效",
                 },
@@ -2586,7 +2586,7 @@ return {
             stake_red={
                 name="红注",
                 text={
-                    "{C:attention}小盲注{}",
+                    "{C:attention}小回合{}",
                     "没有奖励金",
                     "{s:0.8}之前所有赌注也都起效",
                 },
@@ -2602,8 +2602,8 @@ return {
             tag_boss={
                 name="Boss标签",
                 text={
-                    "重掷",
-                    "{C:attention}Boss盲注",
+                    "重置",
+                    "{C:attention}Boss回合",
                 },
             },
             tag_buffoon={
@@ -2632,7 +2632,7 @@ return {
                 name="D6标签",
                 text={
                     "下一个商店的",
-                    "重掷起价为{C:money}$0",
+                    "重置起价为{C:money}$0",
                 },
             },
             tag_double={
@@ -2693,7 +2693,7 @@ return {
                 name="投资标签",
                 text={
                     "击败",
-                    "Boss盲注后",
+                    "Boss回合后",
                     "获得{C:money}$#1#",
                 },
             },
@@ -2745,7 +2745,7 @@ return {
                 name="速度标签",
                 text={
                     "本赛局中每跳过",
-                    "一次盲注，可获得{C:money}$#1#{}",
+                    "一次回合，可获得{C:money}$#1#{}",
                     "{C:inactive}（将获得{C:money}$#2#{C:inactive}）",
                 },
             },
@@ -2993,8 +2993,8 @@ return {
             v_directors_cut={
                 name="导演剪辑版",
                 text={
-                    "可以重掷Boss盲注",
-                    "每个底注限重掷{C:attention}1{}次",
+                    "可以重置Boss回合",
+                    "每个关卡限重置{C:attention}1{}次",
                     "每次花费{C:money}$#1#{}",
                 },
             },
@@ -3022,7 +3022,7 @@ return {
             v_hieroglyph={
                 name="象形文字",
                 text={
-                    "底注{C:attention}-#1#{}",
+                    "关卡{C:attention}-#1#{}",
                     "每回合",
                     "出牌次数{C:blue}-#1#{}",
                 },
@@ -3163,12 +3163,12 @@ return {
             v_petroglyph={
                 name="岩画",
                 text={
-                    "底注{C:attention}-#1#{}",
+                    "关卡{C:attention}-#1#{}",
                     "每回合",
                     "弃牌次数{C:red}-#1#{}",
                 },
                 unlock={
-                    "达到底注",
+                    "达到关卡",
                     "等级{E:1,C:attention}#1#",
                 },
             },
@@ -3208,34 +3208,34 @@ return {
                 },
             },
             v_reroll_glut={
-                name="重掷加強版",
+                name="重置加強版",
                 text={
-                    "重掷费用",
+                    "重置费用",
                     "减少{C:money}$#1#{}",
                 },
                 unlock={
-                    "重掷商店",
+                    "重置商店",
                     "总共{C:attention}#1#{}次",
                     "{C:inactive}(#2#)",
                 },
             },
             v_reroll_surplus={
-                name="多次重掷",
+                name="多次重置",
                 text={
-                    "重掷费用",
+                    "重置费用",
                     "减少{C:money}$#1#{}",
                 },
             },
             v_retcon={
                 name="重构",
                 text={
-                    "重掷Boss盲注",
+                    "重置Boss回合",
                     "{C:attention}不限{}次数",
-                    "每次重掷花费{C:money}$#1#{}",
+                    "每次重置花费{C:money}$#1#{}",
                 },
                 unlock={
                     "发现",
-                    "{C:attention}#1#{}盲注",
+                    "{C:attention}#1#{}回合",
                 },
             },
             v_seed_money={
@@ -3292,8 +3292,8 @@ return {
             _100000k="单次出牌获得1亿筹码",
             _1000k="单次出牌获得100万筹码",
             _10k="单次出牌获得1万筹码",
-            ante_up="达到底注4阶段",
-            ante_upper="达到底注8阶段",
+            ante_up="达到关卡4阶段",
+            ante_upper="达到关卡8阶段",
             astronomy="发现所有星球牌",
             big_hands="牌组中拥有80张或以上的卡牌",
             card_discarder="弃掉至少2500张牌",
@@ -3312,21 +3312,21 @@ return {
             mid_stakes="在至少黑注难度下赢一局",
             nest_egg="单局中拥有 $400 或以上",
             retrograde="让任一牌型升至第10级",
-            roi="在底注4阶段时购买5张优惠券",
+            roi="在关卡4阶段时购买5张优惠券",
             royale="打出一次皇家同花顺",
             rule_bender="完成任一挑战局",
             rule_breaker="完成每一场挑战局",
             shattered="单次出牌打碎2张玻璃牌",
             speedrunner="在12回合内赢得一局",
             tiny_hands="将你的牌组减少到20张或更少",
-            you_get_what_you_get="赢下一局且没有在商店中重掷",
+            you_get_what_you_get="赢下一局且没有在商店中重置",
         },
         achievement_names={
             _100000k="1亿",
             _1000k="100万",
             _10k="1万",
-            ante_up="底注上升！",
-            ante_upper="底注再上升！",
+            ante_up="关卡上升！",
+            ante_upper="关卡再上升！",
             astronomy="天文",
             big_hands="大手",
             card_discarder="弃牌能手",
@@ -3387,75 +3387,75 @@ return {
         collabs={
             Clubs={
                 ["1"]="默认",
-                ["2"]="Vampire Survivors",
-                ["3"]="Slay the Spire",
+                ["2"]="吸血鬼幸存者",
+                ["3"]="杀戮尖塔",
                 ["4"]="药剂工艺",
-                ["5"]="Warframe",
-                ["6"]="Vault-Tec",
-                ["7"]="Dead by Daylight",
+                ["5"]="星际战甲",
+                ["6"]="避难所科技",
+                ["7"]="黎明杀机",
             },
             ClubsAlt={
                 ["1"]="默认",
-                ["2"]="Survivors",
-                ["3"]="Slay the Spire",
+                ["2"]="幸存者",
+                ["3"]="杀戮尖塔",
                 ["4"]="药剂工艺",
-                ["5"]="Tenno Awakening",
-                ["6"]="Vault-Tec",
-                ["7"]="The Fog",
+                ["5"]="天诺觉醒",
+                ["6"]="避难所科技",
+                ["7"]="迷雾",
             },
             Diamonds={
                 ["1"]="默认",
                 ["2"]="潜水员戴夫",
                 ["3"]="星露谷物语",
                 ["4"]="挺进地牢",
-                ["5"]="1000xRESIST",
-                ["6"]="Civilization VII",
-                ["7"]="Rust",
+                ["5"]="1000x抗争",
+                ["6"]="文明 VII",
+                ["7"]="腐蚀",
             },
             DiamondsAlt={
                 ["1"]="默认",
                 ["2"]="潜水员戴夫",
                 ["3"]="星露谷物语",
-                ["4"]="Bullet Kin",
-                ["5"]="Hekki Grace",
-                ["6"]="Civilization VII",
-                ["7"]="Facepunch Survivors",
+                ["4"]="子弹人",
+                ["5"]="赫基恩恩赐",
+                ["6"]="文明 VII",
+                ["7"]="Facepunch 幸存者",
             },
             Hearts={
                 ["1"]="默认",
-                ["2"]="Among Us",
-                ["3"]="The Binding of Isaac",
+                ["2"]="太空杀",
+                ["3"]="以撒的结合",
                 ["4"]="咩咩启示录",
-                ["5"]="Divinity Original Sin 2",
-                ["6"]="Critical Role",
-                ["7"]="Bugsnax",
+                ["5"]="神界：原罪 2",
+                ["6"]="关键角色",
+                ["7"]="点心虫",
             },
             HeartsAlt={
                 ["1"]="默认",
-                ["2"]="Among Us",
-                ["3"]="Bible Thump",
-                ["4"]="Lambs in a Cult",
-                ["5"]="Rivellon Pack",
-                ["6"]="Critical Role",
-                ["7"]="Bugsnax",
+                ["2"]="太空杀",
+                ["3"]="圣经痛哭",
+                ["4"]="教团羔羊",
+                ["5"]="里维隆包",
+                ["6"]="关键角色",
+                ["7"]="点心虫",
             },
             Spades={
                 ["1"]="默认",
                 ["2"]="巫师",
                 ["3"]="赛博朋克 2077",
-                ["4"]="Shovel Knight",
+                ["4"]="铲子骑士",
                 ["5"]="饥荒",
-                ["6"]="Assassin's Creed",
-                ["7"]="Slay the Princess",
+                ["6"]="刺客信条",
+                ["7"]="屠杀公主",
             },
             SpadesAlt={
                 ["1"]="默认",
-                ["2"]="The Continent",
-                ["3"]="Night City",
-                ["4"]="Shovel Knight",
-                ["5"]="Nightmare Throne",
-                ["6"]="Ezio and Friends",
-                ["7"]="A Path in the Woods",
+                ["2"]="大陆",
+                ["3"]="夜之城",
+                ["4"]="铲子骑士",
+                ["5"]="梦魇王座",
+                ["6"]="艾吉欧和他的朋友们",
+                ["7"]="林中小径",
             },
         },
         dictionary={
@@ -3463,7 +3463,7 @@ return {
             b_FAQ="常见问题",
             b_and_use="＆使用",
             b_back="返回",
-            b_blinds="盲注",
+            b_blinds="回合",
             b_booster_packs="补充包",
             b_buy="购买",
             b_cash_out="提现",
@@ -3473,13 +3473,13 @@ return {
             b_continue="继续",
             b_copy="复制",
             b_copy_seed="复制种子",
-            b_create_profile="创建配置",
+            b_create_profile="创建玩家",
             b_credits="制作人员",
-            b_current_profile="当前配置",
+            b_current_profile="当前玩家",
             b_customize_deck="定制牌组",
             b_deck="牌组",
             b_decks="牌组",
-            b_delete_profile="删除配置",
+            b_delete_profile="删除玩家",
             b_discard="弃牌",
             b_editions="版本",
             b_endless="无尽模式",
@@ -3501,7 +3501,7 @@ return {
             b_options="选项",
             b_options_cap="选项",
             b_planet_cards="星球牌",
-            b_play_cap="开始Q",
+            b_play_cap="开始游戏",
             b_play_hand="出牌",
             b_playbalatro="访问 playbalatro.com",
             b_poker_hands="牌型",
@@ -3509,12 +3509,12 @@ return {
             b_redeem="兑换",
             b_reduced_motion="减少动态效果",
             b_remaining="剩余",
-            b_reroll_boss="重掷Boss盲注",
-            b_reset_profile="重设配置",
+            b_reroll_boss="重置Boss回合",
+            b_reset_profile="重设玩家",
             b_restrictions="限制条件",
-            b_retry="重試",
+            b_retry="重试",
             b_rules="规则",
-            b_run_info_1="比赛",
+            b_run_info_1="牌型",
             b_run_info_2="信息",
             b_seals="蜡封",
             b_seed="种子",
@@ -3542,7 +3542,7 @@ return {
             b_set_windowmode="窗口模式",
             b_settings="设置",
             b_skip="跳过",
-            b_skip_blind="跳过盲注",
+            b_skip_blind="跳过回合",
             b_skip_reward="跳过奖励",
             b_sort_hand="理牌",
             b_sounds="声音",
@@ -3570,8 +3570,8 @@ return {
             k_again_ex="再来一次！",
             k_all_hands="全部出牌",
             k_also_applied="同样起效",
-            k_ante="底注",
-            k_ante_cap="底注",
+            k_ante="关卡",
+            k_ante_cap="关卡",
             k_arcana_pack="秘术包",
             k_balanced="平衡",
             k_banned_cards="禁用卡",
@@ -3596,7 +3596,7 @@ return {
             k_debuffed="被削弱",
             k_deck="牌组",
             k_deck_stake_wins="牌组赌注完成度",
-            k_defeated_by="负于",
+            k_defeated_by="败于",
             k_demo_version_ex="试玩版！",
             k_disabled_ex="已失效！",
             k_drank_ex="喝光了！",
@@ -3625,7 +3625,7 @@ return {
             k_level_prefix="等级",
             k_level_up_ex="提升等级！",
             k_locked="锁定",
-            k_lower_score="分数",
+            k_lower_score="得分",
             k_lvl="等级",
             k_melted_ex="融化了！",
             k_money="资金",
@@ -3651,12 +3651,12 @@ return {
             k_plus_stone="+1石头牌",
             k_plus_tarot="+1塔罗牌",
             k_poker_hand="牌型",
-            k_profile="配置",
+            k_profile="玩家",
             k_progress="进度",
             k_rank="点数",
             k_rare="稀有",
             k_redeemed_ex="兑换！",
-            k_reroll="重掷",
+            k_reroll="重置",
             k_reset="重置",
             k_reward="奖励",
             k_round="回合",
@@ -3764,11 +3764,11 @@ return {
             },
             ml_unlock_all_explanation={
                 "警告！解锁全部收藏道具",
-                "会禁用此存档配置的成就！",
+                "会禁用此存档玩家的成就！",
             },
             ml_unlock_all_trophies={
                 "警告！解锁全部收藏道具",
-                "会禁用此存档配置的奖杯！",
+                "会禁用此存档玩家的奖杯！",
             },
             ml_vsync_opt={
                 "垂直同步开启",
@@ -3787,12 +3787,12 @@ return {
             ph_blind_score_at_least="至少得分",
             ph_boss_disabled="Boss限制条件失效！",
             ph_choose_blind_1="选择你的",
-            ph_choose_blind_2="下一个盲注",
+            ph_choose_blind_2="下一个回合",
             ph_click_confirm="再次点击确认",
-            ph_deck_preview_effective="因小丑、盲注和卡牌强化而产生的有效总数",
+            ph_deck_preview_effective="因小丑、回合和卡牌强化而产生的有效总数",
             ph_deck_preview_stones="石头",
-            ph_defeat_the_boss="打赢Boss盲注",
-            ph_defeat_this_blind_1="打败盲注",
+            ph_defeat_the_boss="打赢Boss回合",
+            ph_defeat_this_blind_1="打败回合",
             ph_defeat_this_blind_2="以发现它",
             ph_demo_thanks_1="感谢游玩",
             ph_demo_thanks_2="BALATRO 演示版",
@@ -3804,24 +3804,24 @@ return {
             ph_no_boss_active="无活跃boss",
             ph_no_vouchers="本赛局并未兑换任何优惠券",
             ph_score_at_least="至少得分",
-            ph_score_cards_discarded="已弃掉卡牌",
-            ph_score_cards_played="已使用卡牌",
-            ph_score_cards_purchased="已购买卡牌",
-            ph_score_furthest_ante="底注",
+            ph_score_cards_discarded="弃掉卡牌",
+            ph_score_cards_played="使用卡牌",
+            ph_score_cards_purchased="购买卡牌",
+            ph_score_furthest_ante="关卡",
             ph_score_furthest_round="回合",
             ph_score_hand="最佳出牌",
             ph_score_new_collection="新发现",
-            ph_score_poker_hand="最常用牌型",
-            ph_score_times_rerolled="重掷次数",
+            ph_score_poker_hand="常用牌型",
+            ph_score_times_rerolled="重置次数",
             ph_select_challenge="选择一项挑战",
             ph_sneak_peek="抢先看",
             ph_stat_consumable="这张卡的使用次数",
             ph_stat_joker="使用此卡完成的总回合数",
             ph_stat_voucher="兑换此优惠券的次数",
             ph_unscored_hand="出牌将不会得分",
-            ph_up_ante_1="提高底注",
-            ph_up_ante_2="加注所有盲注",
-            ph_up_ante_3="刷新盲注",
+            ph_up_ante_1="提高关卡",
+            ph_up_ante_2="加注所有回合",
+            ph_up_ante_3="刷新回合",
             ph_vouchers_redeemed="本赛局兑换的优惠券",
             ph_you_win="你赢了！",
             ph_you_win_demo="你赢下了试玩版！",
@@ -3830,7 +3830,7 @@ return {
             boss_streak="最多连续击败Boss",
             collection="收藏",
             current_streak="",
-            furthest_ante="最高底注",
+            furthest_ante="最高关卡",
             furthest_round="最高回合",
             hand="最佳出牌",
             most_money="最多资金",
@@ -4035,7 +4035,7 @@ return {
         },
         tutorial={
             bb_1={
-                "选择{C:attention}大盲注",
+                "选择{C:attention}大回合",
                 "可以赚到一点钱",
             },
             bb_2={
@@ -4045,17 +4045,17 @@ return {
             },
             bb_3={
                 "但要注意",
-                "{C:attention}Boss盲注{}。 每个Boss盲注",
+                "{C:attention}Boss回合{}。 每个Boss回合",
                 "都有着限制条件",
                 "您必须要有策略来应对。",
             },
             bb_4={
                 "如果你战胜了它，那么",
-                "{C:attention}底注{}就会提升，然后",
-                "所有{C:attention}盲注{}都会变得更难",
+                "{C:attention}关卡{}就会提升，然后",
+                "所有{C:attention}回合{}都会变得更难",
             },
             bb_5={
-                "通关{C:attention}底注{}#1#就可以获得胜利。",
+                "通关{C:attention}关卡{}#1#就可以获得胜利。",
                 "那么，来选择你的路线吧！",
             },
             fh_1={
@@ -4118,7 +4118,7 @@ return {
             },
             s_10={
                 "只要你打败",
-                "{C:attention}Boss盲注{}，",
+                "{C:attention}Boss回合{}，",
                 "{C:attention}优惠券{}就会补货上架。",
             },
             s_11={
@@ -4185,15 +4185,15 @@ return {
             sb_2={
                 "你的目标是赚取",
                 "{C:blue}筹码{}以击败",
-                "敌方的{C:attention}盲注",
+                "敌方的{C:attention}回合",
             },
             sb_3={
-                "这是{C:blue}小盲注{}，",
+                "这是{C:blue}小回合{}，",
                 "你只需要获得",
                 "{C:attention}300筹码{}就可击败它。",
             },
             sb_4={
-                "选择{C:blue}小盲注",
+                "选择{C:blue}小回合",
                 "来开始回合！",
             },
             sh_1={
@@ -4231,7 +4231,7 @@ return {
             a_sold_tally="#1#/#2#售出",
             a_xmult="X#1#倍率",
             a_xmult_minus="-X#1#倍率",
-            ante_x_voucher="底注#1#优惠券",
+            ante_x_voucher="关卡#1#优惠券",
             challenges_completed="已完成#1#/#2#挑战",
             completed="#1#/#2#已完成",
             deck_preview_wheel_plural="由于抽出的#1#牌面朝下，数字可能较低",
@@ -4295,10 +4295,10 @@ return {
                 "回合结束时不赚取{C:attention}利息{}",
             },
             ch_c_no_reward={
-                "所有{C:attention}盲注{}均无奖励金",
+                "所有{C:attention}回合{}均无奖励金",
             },
             ch_c_no_reward_specific={
-                "{C:attention}#1#盲注{}均无奖励金",
+                "{C:attention}#1#回合{}均无奖励金",
             },
             ch_c_no_shop_jokers={
                 "小丑牌不再出现在{C:attention}商店{}中",
@@ -4307,10 +4307,10 @@ return {
                 "{C:inactive}无",
             },
             ch_c_set_eternal_ante={
-                "当底注{C:attention}#1#{}的Boss盲注被击败时，所有小丑牌变为{C:attention}永恒卡",
+                "当关卡{C:attention}#1#{}的Boss回合被击败时，所有小丑牌变为{C:attention}永恒卡",
             },
             ch_c_set_joker_slots_ante={
-                "当底注{C:attention}#1#{}的Boss盲注被击败时，将小丑牌槽位设置为{C:attention}0",
+                "当关卡{C:attention}#1#{}的Boss回合被击败时，将小丑牌槽位设置为{C:attention}0",
             },
             ch_c_set_seed={
                 "使用固定种子进行1次性的挑战：{C:inactive}{Hidden}",
